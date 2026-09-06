@@ -42,6 +42,7 @@ import net.runelite.client.plugins.slayer.SlayerConfig;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.util.Text;
 
 @Slf4j
@@ -69,6 +70,7 @@ public class ExtinctionManPlugin extends Plugin
 	@Inject private BestiaryRegistry bestiaryRegistry;
 	@Inject private ExtinctionLogPanel extinctionLogPanel;
 	@Inject private ClientToolbar clientToolbar;
+	@Inject private ClientThread clientThread;
 	@Inject private RenderCallbackManager renderCallbackManager;
 	@Inject private MetaProgressRepository metaProgressRepository;
 	@Inject private ItemRegistry itemRegistry;
@@ -130,7 +132,13 @@ public class ExtinctionManPlugin extends Plugin
 		clientToolbar.addNavigation(navigationButton);
 		extinctionLogPanel.refresh();
 		renderCallbackManager.register(renderCallback);
-		initializeKnownNpcs();
+		clientThread.invokeLater(() ->
+		{
+			if (repository != null)
+			{
+				initializeKnownNpcs();
+			}
+		});
 		log.debug("Extinction Man started");
 	}
 
@@ -186,7 +194,13 @@ public class ExtinctionManPlugin extends Plugin
 			&& !isInternalStorageKey(event.getKey()))
 		{
 			extinctionLogPanel.refresh();
-			refreshExtinctGhosts();
+			clientThread.invokeLater(() ->
+			{
+				if (repository != null)
+				{
+					refreshExtinctGhosts();
+				}
+			});
 		}
 	}
 
