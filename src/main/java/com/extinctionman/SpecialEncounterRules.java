@@ -4,12 +4,22 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import net.runelite.api.gameval.InterfaceID;
 
 final class SpecialEncounterRules
 {
 	static final String CHAMBERS_OF_XERIC = "Chambers of Xeric";
 	static final String THEATRE_OF_BLOOD = "Theatre of Blood";
 	static final String TOMBS_OF_AMASCUT = "Tombs of Amascut";
+	static final String SOL_HEREDIT = "Sol Heredit";
+	static final String DOOM_OF_MOKHAIOTL = "Doom of Mokhaiotl";
+	static final String COLOSSEUM_REWARD_READY_MESSAGE =
+		"Search the chest nearby to retrieve your earned rewards!";
+	private static final Set<String> BARROWS_BROTHERS = setOfNames(
+		"Ahrim the Blighted", "Dharok the Wretched", "Guthan the Infested",
+		"Karil the Tainted", "Torag the Corrupted", "Verac the Defiled");
+	private static final Set<String> MOONS_OF_PERIL = setOfNames(
+		"Blood Moon", "Blue Moon", "Eclipse Moon");
 	static final String TZTOK_JAD = "TzTok-Jad";
 	static final String TZKAL_ZUK = "TzKal-Zuk";
 	static final int FIGHT_CAVES_REGION = 9551;
@@ -24,6 +34,9 @@ final class SpecialEncounterRules
 	private static final Set<Integer> BARBARIAN_ASSAULT_REGIONS = setOf(7508, 7509, 10322);
 	private static final Set<String> GWD_GENERALS = setOfNames(
 		"Kree'arra", "General Graardor", "Commander Zilyana", "K'ril Tsutsaroth", "Nex");
+	private static final Set<String> SHARED_KILL_BOSSES = setOfNames(
+		"Callisto", "Venenatis", "Vet'ion", "Nex", "The Nightmare", "The Hueycoatl",
+		"Scurrius", "Branda, Queen of Fire", "Eldric, King of Ice", "Yama");
 	private static final Set<String> TECHNICAL_NPCS = setOfNames(
 		"Respiratory system", "Enormous Tentacle", "Hueycoatl's tail",
 		"Hueycoatl tail", "Abyssal portal");
@@ -54,7 +67,10 @@ final class SpecialEncounterRules
 		if (raidAtRegion(regionId) != null) return true;
 		if (regionId == FIGHT_CAVES_REGION) return !TZTOK_JAD.equals(npcName);
 		if (regionId == INFERNO_REGION) return !TZKAL_ZUK.equals(npcName);
-		if (regionId == FORTIS_COLOSSEUM_REGION) return !"Sol Heredit".equals(npcName);
+		// Colosseum progress is awarded when the player cashes out, regardless of wave.
+		if (regionId == FORTIS_COLOSSEUM_REGION) return true;
+		// A Doom delve only becomes a challenge completion when its accumulated loot is claimed.
+		if (DOOM_OF_MOKHAIOTL.equals(npcName)) return true;
 		if (regionId == GAUNTLET_REGION) return !"Crystalline Hunllef".equals(npcName);
 		if (regionId == CORRUPTED_GAUNTLET_REGION) return !"Corrupted Hunllef".equals(npcName);
 		if (SOUL_WARS_REGIONS.contains(regionId)) return true;
@@ -66,7 +82,7 @@ final class SpecialEncounterRules
 	static boolean shouldExcludeEncounterNpc(int regionId, String npcName)
 	{
 		if (alwaysIgnoredTechnicalNpc(npcName)) return true;
-		if (regionId == FORTIS_COLOSSEUM_REGION) return !"Sol Heredit".equals(npcName);
+		if (regionId == FORTIS_COLOSSEUM_REGION) return !SOL_HEREDIT.equals(npcName);
 		if (regionId == GAUNTLET_REGION) return !"Crystalline Hunllef".equals(npcName);
 		if (regionId == CORRUPTED_GAUNTLET_REGION) return !"Corrupted Hunllef".equals(npcName);
 		if (SOUL_WARS_REGIONS.contains(regionId)) return true;
@@ -76,7 +92,7 @@ final class SpecialEncounterRules
 
 	static boolean shouldAlwaysRemainVisible(int regionId, String npcName)
 	{
-		if (regionId == FORTIS_COLOSSEUM_REGION) return !"Sol Heredit".equals(npcName);
+		if (regionId == FORTIS_COLOSSEUM_REGION) return !SOL_HEREDIT.equals(npcName);
 		if (SOUL_WARS_REGIONS.contains(regionId)) return true;
 		if (BARBARIAN_ASSAULT_REGIONS.contains(regionId)) return !"Penance Queen".equals(npcName);
 		return alwaysIgnoredTechnicalNpc(npcName);
@@ -95,13 +111,91 @@ final class SpecialEncounterRules
 		return null;
 	}
 
+	static boolean allowsSharedKillCredit(String npcName)
+	{
+		return npcName != null && SHARED_KILL_BOSSES.contains(npcName);
+	}
+
+	static boolean isGauntletBoss(String npcName)
+	{
+		return "Crystalline Hunllef".equals(npcName) || "Corrupted Hunllef".equals(npcName);
+	}
+
+	static boolean isGauntletRewardSource(String sourceName, boolean corrupted)
+	{
+		return corrupted ? "Corrupted Hunllef".equals(sourceName)
+			: "Crystalline Hunllef".equals(sourceName);
+	}
+
+	static boolean isBarrowsBrother(String npcName)
+	{
+		return npcName != null && BARROWS_BROTHERS.contains(npcName);
+	}
+
+	static Set<String> barrowsBrothers()
+	{
+		return BARROWS_BROTHERS;
+	}
+
+	static boolean isMoonBoss(String npcName)
+	{
+		return npcName != null && MOONS_OF_PERIL.contains(npcName);
+	}
+
+	static Set<String> moonBosses()
+	{
+		return MOONS_OF_PERIL;
+	}
+
+	static boolean sharesRewardActivity(String sourceName, String npcName)
+	{
+		return (isBarrowsBrother(sourceName) && isBarrowsBrother(npcName))
+			|| (isMoonBoss(sourceName) && isMoonBoss(npcName));
+	}
+
 	static boolean alwaysIgnoredTechnicalNpc(String npcName)
 	{
-		return npcName != null && TECHNICAL_NPCS.contains(npcName);
+		if (npcName == null) return false;
+		String lower = npcName.toLowerCase(java.util.Locale.ENGLISH);
+		return TECHNICAL_NPCS.contains(npcName)
+			|| lower.equals("left claw") || lower.equals("right claw")
+			|| (lower.contains("great olm") && lower.contains("claw"));
 	}
 
 	static boolean isRaidName(String name) { return RAID_NAMES.contains(name); }
 	static Set<String> raidNames() { return RAID_NAMES; }
+
+	static boolean shouldHideRaidNpc(boolean raidExtinct, boolean activeException,
+		String npcName, String[] actions, int combatLevel)
+	{
+		return raidExtinct && !activeException
+			&& BestiaryRegistry.isAttackable(npcName, actions, combatLevel);
+	}
+
+	static String rewardClaimSourceForChatMessage(String message)
+	{
+		return message != null && message.contains(COLOSSEUM_REWARD_READY_MESSAGE)
+			? SOL_HEREDIT : null;
+	}
+
+	static boolean isClaimBasedActivity(String name)
+	{
+		return isRaidName(name) || SOL_HEREDIT.equals(name) || DOOM_OF_MOKHAIOTL.equals(name);
+	}
+
+	static String rewardClaimSourceForWidget(int packedWidgetId)
+	{
+		if (packedWidgetId == InterfaceID.DomEndLevelUi.BTN_CLAIM)
+		{
+			return DOOM_OF_MOKHAIOTL;
+		}
+		if (packedWidgetId == InterfaceID.ColosseumIntermission2.LEFT_BUTTON
+			|| packedWidgetId == InterfaceID.ColosseumReward.REWARD_CLAIM)
+		{
+			return SOL_HEREDIT;
+		}
+		return null;
+	}
 
 	static String canonicalRaidBoss(String raidName, String npcName)
 	{
@@ -109,7 +203,7 @@ final class SpecialEncounterRules
 		String lower = npcName.toLowerCase(java.util.Locale.ENGLISH);
 		if (CHAMBERS_OF_XERIC.equals(raidName))
 		{
-			if (lower.contains("great olm")) return "Great Olm";
+			if (lower.equals("great olm")) return "Great Olm";
 			if (lower.contains("tekton")) return "Tekton";
 			if (lower.contains("muttadile")) return "Muttadile";
 			if (lower.equals("guardian")) return "Guardian";

@@ -1,5 +1,7 @@
 package com.extinctionman;
 
+import java.util.Arrays;
+import java.util.Collections;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -7,21 +9,19 @@ import static org.junit.Assert.assertEquals;
 public class SoulPointEconomyTest
 {
 	@Test
-	public void banksOnePointAndResetsMeterEveryHundredExterminations()
+	public void monstersAwardOneEnergyAndBossesAwardTen()
 	{
-		assertEquals(0, SoulPointEconomy.earnedPoints(99));
-		assertEquals(99, SoulPointEconomy.progressToNextPoint(99));
-		assertEquals(1, SoulPointEconomy.earnedPoints(100));
-		assertEquals(0, SoulPointEconomy.progressToNextPoint(100));
-		assertEquals(2, SoulPointEconomy.earnedPoints(200));
-		assertEquals(0, SoulPointEconomy.progressToNextPoint(200));
+		assertEquals(0, SoulPointEconomy.earnedEnergy(Collections.emptyList()));
+		assertEquals(1, SoulPointEconomy.earnedEnergy(Collections.singletonList("Goblin")));
+		assertEquals(10, SoulPointEconomy.earnedEnergy(Collections.singletonList("Vorkath")));
+		assertEquals(11, SoulPointEconomy.earnedEnergy(Arrays.asList("Goblin", "Vorkath")));
 	}
 
 	@Test
-	public void spendingAnUnlockConsumesOneBankedPointOnly()
+	public void spendingUsesTheNewPointScale()
 	{
-		assertEquals(2, SoulPointEconomy.availablePoints(250, 0));
-		assertEquals(1, SoulPointEconomy.availablePoints(250, 1));
-		assertEquals(50, SoulPointEconomy.progressToNextPoint(250));
+		assertEquals(11, SoulPointEconomy.availableEnergy(Arrays.asList("Goblin", "Vorkath"), 0));
+		assertEquals(1, SoulPointEconomy.availableEnergy(Arrays.asList("Goblin", "Vorkath"), 10));
+		assertEquals(0, SoulPointEconomy.availableEnergy(Collections.singletonList("Goblin"), 10));
 	}
 }

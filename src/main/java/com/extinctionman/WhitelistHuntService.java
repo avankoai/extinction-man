@@ -1,5 +1,6 @@
 package com.extinctionman;
 
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -19,9 +20,19 @@ final class WhitelistHuntService
 		return metaProgressRepository.getActiveHunt();
 	}
 
+	synchronized List<WhitelistUnlock> getActiveHunts()
+	{
+		return metaProgressRepository.getActiveHunts();
+	}
+
 	synchronized boolean completeActiveHunt()
 	{
 		return metaProgressRepository.completeActiveHunt();
+	}
+
+	synchronized boolean completeHunt(WhitelistUnlock hunt)
+	{
+		return metaProgressRepository.completeHunt(hunt);
 	}
 
 	synchronized boolean isWhitelisted(int canonicalItemId)

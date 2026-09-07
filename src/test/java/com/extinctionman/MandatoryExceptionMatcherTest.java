@@ -12,7 +12,9 @@ public class MandatoryExceptionMatcherTest
 	{
 		assertTrue(MandatoryExceptionMatcher.matches(true, " Goblin ", "Goblin"));
 		assertFalse(MandatoryExceptionMatcher.matches(true, "Goblin", "Hobgoblin"));
-		assertFalse(MandatoryExceptionMatcher.matches(true, "goblin", "Goblin"));
+		assertTrue(MandatoryExceptionMatcher.matches(true, "goblin", "Goblin"));
+		assertTrue(MandatoryExceptionMatcher.matches(true, " GoBLin ", "Goblin"));
+		assertFalse(MandatoryExceptionMatcher.matches(true, "Gob", "Goblin"));
 	}
 
 	@Test
@@ -21,5 +23,7 @@ public class MandatoryExceptionMatcherTest
 		assertFalse(MandatoryExceptionMatcher.matches(false, "Goblin", "Goblin"));
 		assertFalse(MandatoryExceptionMatcher.matches(true, "", "Goblin"));
 		assertFalse(MandatoryExceptionMatcher.matches(true, null, "Goblin"));
+		assertFalse(MandatoryExceptionMatcher.matches(true, "Goblin", null));
+		assertFalse(MandatoryExceptionMatcher.matches(true, "   ", "Goblin"));
 	}
 }

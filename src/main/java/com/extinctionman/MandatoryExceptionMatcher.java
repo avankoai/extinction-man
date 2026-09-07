@@ -12,6 +12,6 @@ final class MandatoryExceptionMatcher
 			&& configuredNpc != null
 			&& exactNpcName != null
 			&& !configuredNpc.trim().isEmpty()
-			&& exactNpcName.equals(configuredNpc.trim());
+			&& exactNpcName.equalsIgnoreCase(configuredNpc.trim());
 	}
 }

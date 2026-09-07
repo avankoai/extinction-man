@@ -13,9 +13,24 @@ final class SoulAnimationTracker
 
 	void add(WorldPoint worldPoint, long nowMillis)
 	{
+		add(worldPoint, nowMillis, false);
+	}
+
+	void add(WorldPoint worldPoint, long nowMillis, boolean extinction)
+	{
+		add(worldPoint, nowMillis, extinction, false);
+	}
+
+	void addGolden(WorldPoint worldPoint, long nowMillis)
+	{
+		add(worldPoint, nowMillis, false, true);
+	}
+
+	private void add(WorldPoint worldPoint, long nowMillis, boolean extinction, boolean golden)
+	{
 		if (worldPoint != null)
 		{
-			animations.add(new SoulAnimation(worldPoint, nowMillis));
+			animations.add(new SoulAnimation(worldPoint, nowMillis, extinction, golden));
 		}
 	}
 

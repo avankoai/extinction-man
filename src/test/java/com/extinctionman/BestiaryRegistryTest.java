@@ -2,6 +2,8 @@ package com.extinctionman;
 
 import org.junit.Test;
 
+import java.util.Collections;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -20,12 +22,16 @@ public class BestiaryRegistryTest
 	}
 
 	@Test
-	public void includesCombinedRaidActivitiesAndCanExcludeSpecialNpcs()
+	public void addsSavedRaidProgressWithoutPreloadingAllRaids()
 	{
 		BestiaryRegistry registry = new BestiaryRegistry();
+		assertFalse(registry.getAttackableNames().contains(SpecialEncounterRules.CHAMBERS_OF_XERIC));
+		assertFalse(registry.getAttackableNames().contains(SpecialEncounterRules.THEATRE_OF_BLOOD));
+		assertFalse(registry.getAttackableNames().contains(SpecialEncounterRules.TOMBS_OF_AMASCUT));
+
+		registry.prioritizeProgress(Collections.singletonList(
+			new SoulProgress(SpecialEncounterRules.CHAMBERS_OF_XERIC, 1)));
 		assertTrue(registry.getAttackableNames().contains(SpecialEncounterRules.CHAMBERS_OF_XERIC));
-		assertTrue(registry.getAttackableNames().contains(SpecialEncounterRules.THEATRE_OF_BLOOD));
-		assertTrue(registry.getAttackableNames().contains(SpecialEncounterRules.TOMBS_OF_AMASCUT));
 		assertTrue(registry.excludeSpecialNpc("Ba-Ba"));
 		assertTrue(registry.isExcludedSpecialNpc("Ba-Ba"));
 		assertFalse(registry.excludeSpecialNpc(SpecialEncounterRules.CHAMBERS_OF_XERIC));

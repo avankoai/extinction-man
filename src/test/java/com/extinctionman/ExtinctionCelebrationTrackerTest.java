@@ -27,10 +27,19 @@ public class ExtinctionCelebrationTrackerTest
 	}
 
 	@Test
-	public void raidCelebrationUsesRewardWording()
+	public void everyExtinctionCelebrationShowsTheCollectedPoint()
 	{
 		ExtinctionCelebrationTracker tracker = new ExtinctionCelebrationTracker();
 		tracker.showRaid(SpecialEncounterRules.TOMBS_OF_AMASCUT, 1000, false);
-		assertEquals("100 / 100 Rewards", tracker.active(1000).getCompletionText());
+		assertEquals("10 Soul Energy Collected", tracker.active(1000).getCompletionText());
+	}
+
+	@Test
+	public void previewLeavesTheSoundReadyToPlay()
+	{
+		ExtinctionCelebrationTracker tracker = new ExtinctionCelebrationTracker();
+		tracker.preview("Goblin", 1000L);
+		assertEquals(true, tracker.active(1001L).claimSound());
+		assertEquals(false, tracker.active(1002L).claimSound());
 	}
 }

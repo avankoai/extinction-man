@@ -30,6 +30,16 @@ final class ForbiddenLootMarker
 		return items.containsKey(itemId);
 	}
 
+	void removeItem(int itemId)
+	{
+		items.remove(itemId);
+	}
+
+	boolean isEmpty()
+	{
+		return items.isEmpty();
+	}
+
 	List<String> getItemNames()
 	{
 		return new ArrayList<>(items.values());

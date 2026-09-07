@@ -6,6 +6,11 @@ final class ExtinctionVisibility
 	{
 	}
 
+	static boolean shouldGhost(boolean extinct, boolean exceptionActive, boolean hidden)
+	{
+		return extinct && exceptionActive && !hidden;
+	}
+
 	static boolean shouldHide(
 		String exactNpcName,
 		boolean hidingEnabled,

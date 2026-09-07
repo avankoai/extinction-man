@@ -29,9 +29,14 @@ final class SoulRepository
 
 	synchronized SoulProgress gainSoul(String exactNpcName)
 	{
+		return gainSouls(exactNpcName, 1);
+	}
+
+	synchronized SoulProgress gainSouls(String exactNpcName, int amount)
+	{
 		ensureLoaded();
 		SoulProgress current = get(exactNpcName);
-		SoulProgress updated = current.gainSoul();
+		SoulProgress updated = current.gainSouls(amount);
 		cache.put(exactNpcName, updated);
 		lastEncountered = updated;
 		saveProfile();
@@ -59,11 +64,28 @@ final class SoulRepository
 
 	synchronized void markComplete(String exactNpcName)
 	{
+		setSouls(exactNpcName, SoulProgress.EXTINCTION_TARGET);
+	}
+
+	synchronized SoulProgress setSouls(String exactNpcName, int souls)
+	{
 		ensureLoaded();
-		SoulProgress completed = new SoulProgress(exactNpcName, SoulProgress.EXTINCTION_TARGET);
-		cache.put(exactNpcName, completed);
-		lastEncountered = completed;
+		SoulProgress edited = new SoulProgress(exactNpcName, souls);
+		if (edited.getSouls() == 0)
+		{
+			cache.remove(exactNpcName);
+			if (lastEncountered != null && lastEncountered.getNpcName().equals(exactNpcName))
+			{
+				lastEncountered = null;
+			}
+		}
+		else
+		{
+			cache.put(exactNpcName, edited);
+			lastEncountered = edited;
+		}
 		saveProfile();
+		return edited;
 	}
 
 	synchronized SoulProgress get(String exactNpcName)
@@ -159,16 +181,17 @@ final class SoulRepository
 		loaded = true;
 		String stored = configManager.getRSProfileConfiguration(
 			ExtinctionManConfig.GROUP, PROFILE_LOG_KEY);
+		String recovery = readRecovery();
+		if (recovery != null)
+		{
+			loadValues(SoulLogCodec.decodeStorage(recovery));
+			saveProfile();
+			return;
+		}
 		if (stored != null)
 		{
 			loadValues(SoulLogCodec.decodeStorage(stored));
 			profileStorageAvailable = true;
-			String recovery = readRecovery();
-			if (recovery != null)
-			{
-				mergeValues(SoulLogCodec.decodeStorage(recovery));
-				saveProfile();
-			}
 			return;
 		}
 
@@ -177,42 +200,35 @@ final class SoulRepository
 		Map<String, Integer> legacy = Boolean.TRUE.equals(migrated)
 			? new HashMap<>() : readLegacyValues();
 		loadValues(legacy);
-		String recovery = readRecovery();
-		if (recovery != null)
-		{
-			mergeValues(SoulLogCodec.decodeStorage(recovery));
-		}
+		String encoded = SoulLogCodec.encodeStorage(cache);
+		configManager.setConfiguration(ExtinctionManConfig.GROUP, recoveryKey(), encoded);
 		configManager.setRSProfileConfiguration(
-			ExtinctionManConfig.GROUP, PROFILE_LOG_KEY, SoulLogCodec.encodeStorage(cache));
+			ExtinctionManConfig.GROUP, PROFILE_LOG_KEY, encoded);
 		String verification = configManager.getRSProfileConfiguration(
 			ExtinctionManConfig.GROUP, PROFILE_LOG_KEY);
-		profileStorageAvailable = verification != null;
+		profileStorageAvailable = StorageRecoveryPolicy.writeWasVerified(encoded, verification);
 		if (profileStorageAvailable && !Boolean.TRUE.equals(migrated))
 		{
 			configManager.setConfiguration(
 				ExtinctionManConfig.GROUP, LEGACY_MIGRATION_KEY, true);
 		}
-		if (!profileStorageAvailable)
+		if (profileStorageAvailable)
 		{
-			configManager.setConfiguration(ExtinctionManConfig.GROUP,
-				recoveryKey(), SoulLogCodec.encodeStorage(cache));
+			clearRecovery();
 		}
 	}
 
 	private void saveProfile()
 	{
+		String encoded = SoulLogCodec.encodeStorage(cache);
+		configManager.setConfiguration(ExtinctionManConfig.GROUP, recoveryKey(), encoded);
 		configManager.setRSProfileConfiguration(
-			ExtinctionManConfig.GROUP, PROFILE_LOG_KEY, SoulLogCodec.encodeStorage(cache));
-		profileStorageAvailable = configManager.getRSProfileConfiguration(
-			ExtinctionManConfig.GROUP, PROFILE_LOG_KEY) != null;
+			ExtinctionManConfig.GROUP, PROFILE_LOG_KEY, encoded);
+		profileStorageAvailable = StorageRecoveryPolicy.writeWasVerified(encoded,
+			configManager.getRSProfileConfiguration(ExtinctionManConfig.GROUP, PROFILE_LOG_KEY));
 		if (profileStorageAvailable)
 		{
 			clearRecovery();
-		}
-		else
-		{
-			configManager.setConfiguration(ExtinctionManConfig.GROUP,
-				recoveryKey(), SoulLogCodec.encodeStorage(cache));
 		}
 	}
 
@@ -243,18 +259,6 @@ final class SoulRepository
 		for (Map.Entry<String, Integer> entry : values.entrySet())
 		{
 			if (entry.getKey() != null && !entry.getKey().trim().isEmpty() && entry.getValue() > 0)
-			{
-				cache.put(entry.getKey(), new SoulProgress(entry.getKey(), entry.getValue()));
-			}
-		}
-	}
-
-	private void mergeValues(Map<String, Integer> values)
-	{
-		for (Map.Entry<String, Integer> entry : values.entrySet())
-		{
-			SoulProgress current = cache.get(entry.getKey());
-			if (current == null || entry.getValue() > current.getSouls())
 			{
 				cache.put(entry.getKey(), new SoulProgress(entry.getKey(), entry.getValue()));
 			}

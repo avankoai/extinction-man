@@ -55,4 +55,14 @@ public class KillCreditTrackerTest
 		tracker.markOtherDamage(npc);
 		assertEquals(KillCreditTracker.DeathClaim.NOT_OURS, tracker.claimDeath(npc, 12));
 	}
+
+	@Test
+	public void sharedBossAllowsCreditAfterOtherPlayerDamage()
+	{
+		KillCreditTracker<Object> tracker = new KillCreditTracker<>();
+		Object npc = new Object();
+		tracker.markOtherDamage(npc);
+		tracker.markOwnDamage(npc, 10);
+		assertEquals(KillCreditTracker.DeathClaim.CREDITED, tracker.claimDeath(npc, 12, true));
+	}
 }

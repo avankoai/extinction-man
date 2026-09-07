@@ -6,12 +6,29 @@ final class SoulAnimation
 {
 	private final WorldPoint worldPoint;
 	private final long startedAtMillis;
+	private final boolean extinction;
+	private final boolean golden;
 
 	SoulAnimation(WorldPoint worldPoint, long startedAtMillis)
 	{
+		this(worldPoint, startedAtMillis, false);
+	}
+
+	SoulAnimation(WorldPoint worldPoint, long startedAtMillis, boolean extinction)
+	{
+		this(worldPoint, startedAtMillis, extinction, false);
+	}
+
+	SoulAnimation(WorldPoint worldPoint, long startedAtMillis, boolean extinction, boolean golden)
+	{
 		this.worldPoint = worldPoint;
 		this.startedAtMillis = startedAtMillis;
+		this.extinction = extinction;
+		this.golden = golden;
 	}
+
+	boolean isExtinction() { return extinction; }
+	boolean isGolden() { return golden; }
 
 	WorldPoint getWorldPoint()
 	{

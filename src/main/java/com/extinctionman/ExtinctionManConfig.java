@@ -10,6 +10,16 @@ public interface ExtinctionManConfig extends Config
 {
 	String GROUP = "extinctionman";
 
+	@ConfigItem(keyName = "playMilestoneSounds", name = "Milestone sounds",
+		description = "Play milestone sounds for extinctions and collected Unbound Souls", position = 5)
+	default boolean playMilestoneSounds() { return true; }
+
+	@net.runelite.client.config.Range(min = 0, max = 100)
+	@ConfigItem(keyName = "milestoneVolume", name = "Milestone volume",
+		description = "Volume of milestone jingles, independent of in-game music (0 mutes)", position = 6)
+	default int milestoneVolume() { return 65; }
+
+
 	@ConfigSection(
 		name = "Mandatory kill exception",
 		description = "Temporarily allow one exact NPC for a required quest or unlock kill",
@@ -61,17 +71,6 @@ public interface ExtinctionManConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "showSoulPointPopup",
-		name = "Show Soul Point popup",
-		description = "Show a separate celebration after earning a banked Soul Point",
-		position = 4
-	)
-	default boolean showSoulPointPopup()
-	{
-		return true;
-	}
-
-	@ConfigItem(
 		keyName = "hideExtinctNpcs",
 		name = "Hide extinct NPCs",
 		description = "Visually hide NPCs whose exact name has reached 100 souls"
@@ -95,8 +94,8 @@ public interface ExtinctionManConfig extends Config
 
 	@ConfigItem(
 		keyName = "mandatoryExceptionNpc",
-		name = "Required NPC exact name",
-		description = "The exact visible NPC name required by a quest or other mandatory activity",
+		name = "Required NPC name",
+		description = "The full visible NPC name required by a quest or unlock; capitalization does not matter",
 		section = mandatoryExceptionSection,
 		position = 1
 	)

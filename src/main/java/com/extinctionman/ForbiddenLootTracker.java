@@ -35,6 +35,16 @@ final class ForbiddenLootTracker
 			.anyMatch(marker -> marker.getWorldPoint().equals(worldPoint) && marker.containsItem(itemId));
 	}
 
+	void remove(WorldPoint worldPoint, int itemId)
+	{
+		if (worldPoint == null) return;
+		for (ForbiddenLootMarker marker : markers)
+		{
+			if (marker.getWorldPoint().equals(worldPoint)) marker.removeItem(itemId);
+		}
+		markers.removeIf(ForbiddenLootMarker::isEmpty);
+	}
+
 	List<ForbiddenLootMarker> active(int currentTick)
 	{
 		markers.removeIf(marker -> marker.isExpired(currentTick));

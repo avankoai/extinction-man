@@ -29,13 +29,18 @@ final class KillCreditTracker<T>
 
 	DeathClaim claimDeath(T target, int tick)
 	{
+		return claimDeath(target, tick, false);
+	}
+
+	DeathClaim claimDeath(T target, int tick, boolean allowSharedCredit)
+	{
 		Integer damageTick = lastOwnDamage.remove(target);
 		boolean contested = contestedTargets.remove(target);
 		if (damageTick == null)
 		{
 			return DeathClaim.NOT_OURS;
 		}
-		return contested ? DeathClaim.CONTESTED : DeathClaim.CREDITED;
+		return contested && !allowSharedCredit ? DeathClaim.CONTESTED : DeathClaim.CREDITED;
 	}
 
 	void forget(T target)

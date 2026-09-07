@@ -21,6 +21,17 @@ final class ItemRegistry
 	private final Map<String, WhitelistItemOption> items = new HashMap<>();
 	private int cursor;
 	private boolean complete;
+	private final Map<String, WhitelistItemOption> savedItems = new HashMap<>();
+
+	synchronized void prioritizeProgress(java.util.Collection<WhitelistUnlock> unlocks)
+	{
+		savedItems.clear();
+		for (WhitelistUnlock unlock : unlocks)
+		{
+			savedItems.put(unlock.getItemName().toLowerCase(Locale.ENGLISH),
+				new WhitelistItemOption(unlock.getItemId(), unlock.getItemName()));
+		}
+	}
 
 	@Inject
 	ItemRegistry(Client client, ItemManager itemManager)
@@ -61,7 +72,9 @@ final class ItemRegistry
 	{
 		String normalized = query.trim().toLowerCase(Locale.ENGLISH);
 		List<WhitelistItemOption> matches = new ArrayList<>();
-		for (WhitelistItemOption item : items.values())
+		Map<String, WhitelistItemOption> available = new HashMap<>(savedItems);
+		available.putAll(items);
+		for (WhitelistItemOption item : available.values())
 		{
 			if (item.getItemName().toLowerCase(Locale.ENGLISH).contains(normalized))
 			{
@@ -70,6 +83,7 @@ final class ItemRegistry
 		}
 		matches.sort(Comparator
 			.comparing((WhitelistItemOption item) -> !item.getItemName().equalsIgnoreCase(query))
+			.thenComparing(item -> !savedItems.containsKey(item.getItemName().toLowerCase(Locale.ENGLISH)))
 			.thenComparing(WhitelistItemOption::getItemName, String.CASE_INSENSITIVE_ORDER)
 			.thenComparingInt(WhitelistItemOption::getItemId));
 		return matches.subList(0, Math.min(limit, matches.size()));

@@ -10,6 +10,23 @@ import static org.junit.Assert.assertTrue;
 public class SoulProgressTest
 {
 	@Test
+	public void testKillCompletesFreshAndPartialProgressWithoutOverflow()
+	{
+		assertEquals(100, new SoulProgress("Goblin", 0).gainSouls(100).getSouls());
+		assertEquals(100, new SoulProgress("Goblin", 43).gainSouls(100).getSouls());
+		assertEquals(100, new SoulProgress("Goblin", 43).gainSouls(Integer.MAX_VALUE).getSouls());
+		assertEquals(43, new SoulProgress("Goblin", 43).gainSouls(-1).getSouls());
+	}
+
+	@Test
+	public void acceleratedKillsRequireDeveloperModeAndTestToggle()
+	{
+		assertEquals(100, ExtinctionManPlugin.killSoulAmount(true, true));
+		assertEquals(1, ExtinctionManPlugin.killSoulAmount(true, false));
+		assertEquals(1, ExtinctionManPlugin.killSoulAmount(false, true));
+		assertEquals(1, ExtinctionManPlugin.killSoulAmount(false, false));
+	}
+	@Test
 	public void gainsOneSoulAndPreservesExactName()
 	{
 		SoulProgress progress = new SoulProgress("Goblin (level-2)", 0).gainSoul();

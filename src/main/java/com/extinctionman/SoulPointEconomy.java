@@ -1,23 +1,20 @@
 package com.extinctionman;
 
+import java.util.Collection;
+
 final class SoulPointEconomy
 {
-	static final int EXTERMINATIONS_PER_POINT = 100;
-
 	private SoulPointEconomy() {}
 
-	static int earnedPoints(int completedExterminations)
+	static int earnedEnergy(Collection<String> completedSpecies)
 	{
-		return Math.max(0, completedExterminations) / EXTERMINATIONS_PER_POINT;
+		if (completedSpecies == null) return 0;
+		return completedSpecies.stream().mapToInt(name -> BossRegistry.isBoss(name) ? 10 : 1).sum();
 	}
 
-	static int availablePoints(int completedExterminations, int unlocksSpent)
+	static int availableEnergy(Collection<String> completedSpecies, int energySpent)
 	{
-		return Math.max(0, earnedPoints(completedExterminations) - Math.max(0, unlocksSpent));
+		return Math.max(0, earnedEnergy(completedSpecies) - Math.max(0, energySpent));
 	}
 
-	static int progressToNextPoint(int completedExterminations)
-	{
-		return Math.max(0, completedExterminations) % EXTERMINATIONS_PER_POINT;
-	}
 }

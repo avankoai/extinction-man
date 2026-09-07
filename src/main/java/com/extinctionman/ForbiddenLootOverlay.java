@@ -42,7 +42,7 @@ final class ForbiddenLootOverlay extends Overlay
 			int offset = 25;
 			for (String itemName : marker.getItemNames())
 			{
-				String label = "Forbidden " + itemName;
+				String label = lockedLabel(itemName);
 				Point textLocation = Perspective.getCanvasTextLocation(
 					client, graphics, localPoint, label, offset);
 				if (textLocation != null)
@@ -53,5 +53,10 @@ final class ForbiddenLootOverlay extends Overlay
 			}
 		}
 		return null;
+	}
+
+	static String lockedLabel(String itemName)
+	{
+		return itemName + " (Locked)";
 	}
 }

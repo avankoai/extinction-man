@@ -16,7 +16,13 @@ final class ExtinctionCelebrationTracker
 	void showRaid(String raidName, long nowMillis, boolean soulPointAwarded)
 	{
 		celebration = new ExtinctionCelebration(
-			raidName, nowMillis, soulPointAwarded, "100 / 100 Rewards");
+			raidName, nowMillis, soulPointAwarded,
+			(BossRegistry.isBoss(raidName) ? "10" : "1") + " Soul Energy Collected");
+	}
+
+	void preview(String npcName, long nowMillis)
+	{
+		celebration = new ExtinctionCelebration(npcName, nowMillis, false);
 	}
 
 	ExtinctionCelebration active(long nowMillis)

@@ -23,7 +23,7 @@ import net.runelite.client.ui.overlay.OverlayUtil;
 
 final class WhitelistLootOverlay extends Overlay
 {
-	private static final Color BEAM = new Color(115, 225, 255);
+	private static final Color BEAM = new Color(255, 178, 25);
 	private final Client client;
 	private final WhitelistLootTracker tracker;
 
@@ -61,30 +61,30 @@ final class WhitelistLootOverlay extends Overlay
 			int height = 145 + Math.round(8 * pulse);
 			int top = bottom - height;
 
-			graphics.setColor(new Color(75, 205, 255, 24 + Math.round(22 * pulse)));
+			graphics.setColor(new Color(255, 178, 25, 24 + Math.round(22 * pulse)));
 			graphics.fillPolygon(tile);
-			graphics.setColor(new Color(125, 235, 255, 55 + Math.round(45 * pulse)));
+			graphics.setColor(new Color(255, 205, 75, 55 + Math.round(45 * pulse)));
 			graphics.setStroke(new BasicStroke(4.5f + pulse * 2f,
 				BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 			graphics.drawPolygon(tile);
 
 			graphics.setPaint(new RadialGradientPaint(x, bottom - 3, 34 + 7 * pulse,
 				new float[]{0f, .38f, 1f},
-				new Color[]{new Color(210, 250, 255, 165),
-					new Color(80, 215, 255, 75), new Color(70, 190, 255, 0)}));
+				new Color[]{new Color(255, 255, 235, 165),
+					new Color(255, 190, 45, 75), new Color(210, 105, 0, 0)}));
 			graphics.fillOval(x - 42, bottom - 45, 84, 84);
 
 			graphics.setPaint(new GradientPaint(x, top,
-				new Color(120, 230, 255, 0), x, bottom,
-				new Color(135, 235, 255, 80 + Math.round(45 * pulse))));
+				new Color(255, 220, 90, 0), x, bottom,
+				new Color(255, 178, 25, 80 + Math.round(45 * pulse))));
 			graphics.fillRoundRect(x - 17, top, 34, height, 24, 24);
 			graphics.setPaint(new GradientPaint(x, top,
-				new Color(225, 255, 255, 8), x, bottom,
-				new Color(225, 255, 255, 175 + Math.round(55 * pulse))));
+				new Color(255, 255, 235, 8), x, bottom,
+				new Color(255, 245, 180, 175 + Math.round(55 * pulse))));
 			graphics.fillRoundRect(x - 7, top + 4, 14, height - 4, 12, 12);
 
 			int moteY = bottom - 28 - (int) ((now / 18 + marker.getItemId()) % 105);
-			graphics.setColor(new Color(225, 255, 255, 130 + Math.round(90 * pulse)));
+			graphics.setColor(new Color(255, 238, 135, 130 + Math.round(90 * pulse)));
 			graphics.fillOval(x - 14, moteY, 5, 5);
 			graphics.fillOval(x + 10, moteY + 31, 4, 4);
 			Point text = Perspective.getCanvasTextLocation(client, graphics, localPoint,

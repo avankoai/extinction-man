@@ -43,6 +43,12 @@ final class SoulProgress
 
 	SoulProgress gainSoul()
 	{
-		return isExtinct() ? this : new SoulProgress(npcName, souls + 1);
+		return gainSouls(1);
+	}
+
+	SoulProgress gainSouls(int amount)
+	{
+		int gained = Math.max(0, Math.min(getRemaining(), amount));
+		return gained == 0 ? this : new SoulProgress(npcName, souls + gained);
 	}
 }

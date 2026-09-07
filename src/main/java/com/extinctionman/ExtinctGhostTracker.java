@@ -1,42 +1,68 @@
 package com.extinctionman;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.Map;
+import java.util.IdentityHashMap;
 import javax.inject.Singleton;
 import net.runelite.api.NPC;
 
 @Singleton
 final class ExtinctGhostTracker
 {
-	private List<NPC> ghosts = Collections.emptyList();
+	// Accessed on the client/render thread. NPC identity must survive index reuse.
+	private final Map<NPC, SoulExceptionType> ghosts = new IdentityHashMap<>();
+	private final Collection<NPC> view = Collections.unmodifiableSet(ghosts.keySet());
 
-	void replace(Collection<NPC> npcs)
+	void replace(Map<NPC, SoulExceptionType> npcs)
 	{
-		ghosts = Collections.unmodifiableList(new ArrayList<>(npcs));
+		ghosts.clear();
+		ghosts.putAll(npcs);
 	}
 
-	List<NPC> active()
+	Collection<NPC> active()
 	{
-		return ghosts;
+		return view;
+	}
+
+	void update(NPC npc, boolean ghost)
+	{
+		update(npc, ghost, SoulExceptionType.UNBOUND);
+	}
+
+	void update(NPC npc, boolean ghost, boolean golden)
+	{
+		update(npc, ghost, golden ? SoulExceptionType.UNBOUND : SoulExceptionType.SLAYER);
+	}
+
+	void update(NPC npc, boolean ghost, SoulExceptionType type)
+	{
+		if (ghost) ghosts.put(npc, type);
+		else ghosts.remove(npc);
+	}
+
+	boolean isGolden(NPC npc)
+	{
+		return ghosts.get(npc) == SoulExceptionType.UNBOUND;
+	}
+
+	SoulExceptionType getType(NPC npc)
+	{
+		return ghosts.get(npc);
 	}
 
 	boolean contains(NPC npc)
 	{
-		return ghosts.contains(npc);
+		return ghosts.containsKey(npc);
 	}
 
 	void remove(NPC npc)
 	{
-		if (!ghosts.contains(npc)) return;
-		List<NPC> updated = new ArrayList<>(ghosts);
-		updated.remove(npc);
-		ghosts = Collections.unmodifiableList(updated);
+		ghosts.remove(npc);
 	}
 
 	void clear()
 	{
-		ghosts = Collections.emptyList();
+		ghosts.clear();
 	}
 }

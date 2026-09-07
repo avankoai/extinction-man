@@ -10,7 +10,8 @@ final class ExtinctionCelebration
 
 	ExtinctionCelebration(String npcName, long startedAtMillis, boolean soulPointAwarded)
 	{
-		this(npcName, startedAtMillis, soulPointAwarded, "100 / 100 Souls");
+		this(npcName, startedAtMillis, soulPointAwarded,
+			(BossRegistry.isBoss(npcName) ? "10" : "1") + " Soul Energy Collected");
 	}
 
 	ExtinctionCelebration(String npcName, long startedAtMillis, boolean soulPointAwarded,
@@ -44,6 +45,11 @@ final class ExtinctionCelebration
 	float alpha(long nowMillis, long durationMillis)
 	{
 		return PopupAnimation.alpha(nowMillis, startedAtMillis, durationMillis);
+	}
+
+	float unfold(long nowMillis, long durationMillis)
+	{
+		return PopupAnimation.unfold(nowMillis, startedAtMillis, durationMillis);
 	}
 
 	boolean isFinished(long nowMillis, long durationMillis)

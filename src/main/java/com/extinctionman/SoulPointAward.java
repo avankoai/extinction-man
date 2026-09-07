@@ -3,14 +3,15 @@ package com.extinctionman;
 final class SoulPointAward
 {
 	private final boolean newExtermination;
-	private final boolean soulPointEarned;
+	private final int soulEnergyEarned;
 
-	SoulPointAward(boolean newExtermination, boolean soulPointEarned)
+	SoulPointAward(boolean newExtermination, int soulEnergyEarned)
 	{
 		this.newExtermination = newExtermination;
-		this.soulPointEarned = soulPointEarned;
+		this.soulEnergyEarned = Math.max(0, soulEnergyEarned);
 	}
 
 	boolean isNewExtermination() { return newExtermination; }
-	boolean isSoulPointEarned() { return soulPointEarned; }
+	boolean isSoulPointEarned() { return soulEnergyEarned > 0; }
+	int getSoulEnergyEarned() { return soulEnergyEarned; }
 }
