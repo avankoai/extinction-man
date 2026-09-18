@@ -280,6 +280,7 @@ final class ExtinctionLogPanel extends PluginPanel
 
 		JTabbedPane tabs = new JTabbedPane();
 		tabs.setFocusable(false);
+		tabs.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		tabs.setBackground(ColorScheme.DARK_GRAY_COLOR);
 		tabs.setForeground(Color.LIGHT_GRAY);
 		addCompactTab(tabs, "Bestiary", bestiaryTab);
