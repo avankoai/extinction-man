@@ -811,9 +811,9 @@ public class ExtinctionManPlugin extends Plugin
 
 		SoulProgress before = repository.get(exactNpcName);
 		bestiaryRegistry.markValidated(exactNpcName);
-		boolean boostedKill = developerMode && nextKillTestBoost.consume();
+		boolean boostedKill = nextKillTestBoost.consume();
 		SoulProgress after = repository.gainSouls(exactNpcName,
-			killSoulAmount(developerMode, boostedKill));
+			killSoulAmount(true, boostedKill));
 		if (!before.isExtinct() && after.isExtinct()
 			&& SpecialEncounterRules.isGodWarsSupportNpc(currentRegionId(), exactNpcName))
 		{

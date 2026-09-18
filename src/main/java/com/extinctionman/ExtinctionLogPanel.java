@@ -245,26 +245,20 @@ final class ExtinctionLogPanel extends PluginPanel
 		editTab.add(Box.createVerticalStrut(5));
 		editTab.add(fullWidthLabel(editHelp));
 		editTab.add(Box.createVerticalStrut(12));
-		if (developerMode)
-		{
-			addEditHeading(editTab, "Test Tools");
-			editTab.add(fullWidthButton(nextKillBoost));
-			editTab.add(Box.createVerticalStrut(12));
-		}
+		addEditHeading(editTab, "Test Tools");
+		editTab.add(fullWidthButton(nextKillBoost));
+		editTab.add(Box.createVerticalStrut(12));
 		addEditHeading(editTab, "Soul Progress");
 		editTab.add(fullWidthButton(adjustSouls));
 		editTab.add(Box.createVerticalStrut(5));
 		editTab.add(fullWidthButton(grantSoulPoint));
 		editTab.add(Box.createVerticalStrut(5));
 		editTab.add(fullWidthButton(removeSoulItem));
-		if (developerMode)
-		{
-			editTab.add(Box.createVerticalStrut(12));
-			addEditHeading(editTab, "Popup Previews");
-			editTab.add(fullWidthButton(previewExtinction));
-			editTab.add(Box.createVerticalStrut(5));
-			editTab.add(fullWidthButton(previewSoulItem));
-		}
+		editTab.add(Box.createVerticalStrut(12));
+		addEditHeading(editTab, "Popup Previews");
+		editTab.add(fullWidthButton(previewExtinction));
+		editTab.add(Box.createVerticalStrut(5));
+		editTab.add(fullWidthButton(previewSoulItem));
 		editTab.add(Box.createVerticalStrut(12));
 		addEditHeading(editTab, "Backup & Restore");
 		editTab.add(fullWidthButton(copyLog));
@@ -1297,7 +1291,6 @@ final class ExtinctionLogPanel extends PluginPanel
 
 	private void previewSoulItemFound()
 	{
-		if (!developerMode) return;
 		WhitelistUnlock hunt = whitelistHuntService.getActiveHunt();
 		String itemName = hunt == null ? "Soul Hammer" : hunt.getItemName();
 		soulItemFoundTracker.preview(itemName, System.currentTimeMillis());
@@ -1305,7 +1298,6 @@ final class ExtinctionLogPanel extends PluginPanel
 
 	private void previewExtinctionPopup()
 	{
-		if (!developerMode) return;
 		extinctionCelebrationTracker.preview("Goblin", System.currentTimeMillis());
 	}
 
