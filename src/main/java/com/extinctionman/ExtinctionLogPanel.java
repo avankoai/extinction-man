@@ -880,7 +880,6 @@ final class ExtinctionLogPanel extends PluginPanel
 
 	private void setTestSoulPoints()
 	{
-		if (!developerMode) return;
 		String requested = JOptionPane.showInputDialog(this,
 			"Enter the Soul Energy balance you want to have:",
 			Integer.toString(metaProgressRepository.getAvailablePoints()));
